@@ -3,16 +3,17 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(email: params[:session][:email].downcase)
-    if user && user.authenticate(params[:session][:password])
+    @user = User.find_by(email: params[:session][:email].downcase)
+    if @user && @user.authenticate(params[:session][:password])
       # セッションにユーザーIDを保存
-      log_in user
+      log_in @user
 
-      # 永続的なセッション情報をDBとCookieへ保存
-      remember user
+      # チェックボックスにチェックが入っている場合は「永続的なセッション情報をDBとCookieへ保存」
+      params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
 
       # ユーザーページへ遷移
-      redirect_to user
+      redirect_to @user
+
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new'
@@ -20,7 +21,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out
+    log_out if logged_in?
     redirect_to root_url
   end
 end

@@ -71,4 +71,17 @@ class UserTest < ActiveSupport::TestCase
     @user.password = @user.password_confirmation = "aaaaa"
     assert_not @user.valid?
   end
+
+  # remember_digestがnilの場合
+  # １番目のブラウザでログアウトし、２番目のブラウザでログイン状態でブラウザを閉じるケースを想定
+  # ・ログアウトしていないため、cookieは残る
+  # ・２番目のブラウザを再度立ち上げた場合、１番目のブラウザでログアウトしたはずだが、cookieのユーザーIDの検証は成功する
+  # ・cookieのトークンとダイジェストの検証は、ダイジェストがログアウト時にnilに設定している
+  # ・ダイジェストをnilにしたため、user.rbのauthenticated?の
+  # BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  # 部分でぬるぽする
+  # 対策：authenticated?で最初にnilチェック処理を追加
+  test "authenticated? should return false for a user with nil digest" do
+    assert_not @user.authenticated?('')
+  end
 end

@@ -61,6 +61,11 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_not is_logged_in?
     # リダイレクト先（ルートページ）が正しいかどうかをチェック
     assert_redirected_to root_url
+
+
+    # 2番目のウィンドウでログアウトをクリックするユーザーをシミュレートする
+    delete logout_path
+
     # リダイレクト実行
     follow_redirect!
 
@@ -69,4 +74,25 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", user_path(@user), count: 0
   end
 
+  # ログインユーザーをブラウザに記憶するテスト
+  test "login with remembering" do
+    log_in_as(@user, remember_me: '1')
+    # cookieが作成されていることを確認
+    # assert_not_empty cookies['remember_token']
+
+    # cookieのトークンとセッションコントローラで扱うuserのトークンが同一であることを確認
+    assert_equal cookies['remember_token'], assigns(:user).remember_token
+  end
+
+
+  # ログインユーザーをブラウザに記憶しないテスト
+  test "login without remembering" do
+    # クッキーを保存してログイン
+    log_in_as(@user, remember_me: '1')
+    delete logout_path
+    # クッキーを削除してログイン
+    log_in_as(@user, remember_me: '0')
+    # cookieが作成されていないことを確認
+    assert_empty cookies['remember_token']
+  end
 end
