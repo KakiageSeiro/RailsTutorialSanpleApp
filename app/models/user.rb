@@ -25,7 +25,8 @@ class User < ApplicationRecord
   # バリデーション。パスワードの最小文字数
   validates :password,
             presence: true,
-            length: {minimum: 6}
+            length: {minimum: 6},
+            allow_nil: true
 
   # 渡された文字列のハッシュ値を返す
   # railsの中のアルゴリズムをパクってきた

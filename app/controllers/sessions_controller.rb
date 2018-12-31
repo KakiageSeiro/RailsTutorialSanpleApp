@@ -12,7 +12,11 @@ class SessionsController < ApplicationController
       params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
 
       # ユーザーページへ遷移
-      redirect_to @user
+      # redirect_to @user
+
+      # セッションにフレンドリフォワーディング用の遷移先が保存されている場合そちらにリダイレクト
+      # そうでない場合はユーザーページにリダイレクト
+      redirect_back_or @user
 
     else
       flash.now[:danger] = 'Invalid email/password combination'
