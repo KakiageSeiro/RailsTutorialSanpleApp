@@ -1,11 +1,20 @@
 <% provide(:title, 'All users') %>
 <h1>All users</h1>
 
+<!--ページング開始-->
+<%= will_paginate %>
+
 <ul class="users">
-  <% @users.each do |user| %>
-    <li>
-      <%= gravatar_for user, size: 50 %>
-      <%= link_to user.name, user %>
-    </li>
-  <% end %>
+  <%= render @users %>
+
+<!--  上記のように@usersと記載すると下記のようにループし、-->
+<!--  ループ内で_user.html.erbを描画する-->
+  <%# @users.each do |user| %>
+<!--    <li>-->
+      <%#= render user %>
+<!--    </li>-->
+  <%# end %>
 </ul>
+
+<!--ページング終了-->
+<%= will_paginate %>
