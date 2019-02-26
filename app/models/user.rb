@@ -1,10 +1,14 @@
 class User < ApplicationRecord
+  #
+  # # cookieの保存場所
+  # attr_accessor :remember_token
+  #
+  # # コールバック関数。DBにコミット前？でブロック引数を実行
+  # before_save {email.downcase!}
 
-  # cookieの保存場所
-  attr_accessor :remember_token
-
-  # コールバック関数。DBにコミット前？でブロック引数を実行
-  before_save {email.downcase!}
+  attr_accessor :remember_token, :activation_token
+  before_save   :downcase_email
+  before_create :create_activation_digest
 
   # バリデーション。必須チェックと長さチェック
   validates :name,
@@ -61,5 +65,17 @@ class User < ApplicationRecord
   # ユーザーのログイン情報を破棄する
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+  # メールアドレスをすべて小文字にする
+  def downcase_email
+    # self.email = email.downcase
+    email.downcase!
+  end
+
+  # 有効化トークンとダイジェストを作成および代入する
+  def create_activation_digest
+    self.activation_token  = User.new_token
+    self.activation_digest = User.digest(activation_token)
   end
 end

@@ -3,10 +3,6 @@ class AccountActivationsController < ApplicationController
   before_save   :downcase_email
   before_create :create_activation_digest
 
-
-
-
-
   private
 
   # メールアドレスをすべて小文字にする
